@@ -1,9 +1,9 @@
-import headerImage from '../images/Mesto.svg'
+import headerImage from "../images/Mesto.svg"
 
-function Header () {
+function Header() {
   return (
     <header className="header">
-      <img src={ headerImage } className="header__image" alt="Логотип Место" />
+      <img src={headerImage} className="header__image" alt="Логотип Место" />
     </header>
   )
 }
