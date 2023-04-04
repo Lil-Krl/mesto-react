@@ -1,31 +1,16 @@
-import React, { useEffect, useState } from "react"
-import apiConnect from "../utils/Api"
+import React, { useContext } from "react"
 import Card from "./Card"
+import CurrentUserContext from "../contexts/CurrentUserContext"
 
 function Main(props) {
-  const [userAvatar, setUserAvatar] = useState("")
-  const [userName, setUserName] = useState("")
-  const [userDescription, setUserDescription] = useState("")
-  const [cards, setCards] = useState([])
-  useEffect(() => {
-    Promise.all([apiConnect.getUserInfo(), apiConnect.getInitialCards()])
-      .then(([userItem, initialCards]) => {
-        setUserName(userItem.name)
-        setUserDescription(userItem.about)
-        setUserAvatar(userItem.avatar)
-        setCards(initialCards)
-      })
-      .catch((err) => {
-        console.log(`Возникла глобальная ошибка, ${err}`)
-      })
-  }, [])
+  const userItem = useContext(CurrentUserContext)
 
   return (
     <main>
       <section className="profile">
         <div className="profile__avatar-place">
           <img
-            src={userAvatar}
+            src={userItem.avatar}
             className="profile__avatar-image"
             alt="Аватар профиля"
           />
@@ -37,14 +22,14 @@ function Main(props) {
           />
         </div>
         <div className="profile__information">
-          <h1 className="profile__username">{userName}</h1>
+          <h1 className="profile__username">{userItem.name}</h1>
           <button
             type="button"
             className="profile__edit-button"
             aria-label="Редактировать профиль"
             onClick={props.onEditProfile}
           />
-          <p className="profile__workplace">{userDescription}</p>
+          <p className="profile__workplace">{userItem.about}</p>
         </div>
         <button
           type="button"
@@ -54,7 +39,7 @@ function Main(props) {
         />
       </section>
       <section className="cards">
-        {cards.map((cardItem) => (
+        {props.cards.map((cardItem) => (
           <Card
             key={cardItem._id}
             link={cardItem.link}
@@ -62,6 +47,7 @@ function Main(props) {
             likeCount={cardItem.likes.length}
             onCardClick={props.onCardClick}
             onCardDelete={props.onCardDelete}
+            onCardLike={props.onCardLike}
             card={cardItem}
           />
         ))}

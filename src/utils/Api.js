@@ -6,7 +6,7 @@ class Api {
     this._headers = headers
   }
 
-  _handleResponse(res) {
+  _processingServerResponse(res) {
     if (res.ok) {
       return res.json()
     } else {
@@ -14,82 +14,80 @@ class Api {
     }
   }
 
-  getUserInfo() {
-    return fetch(`${this._link}users/me`, {
-      headers: this._headers,
-    }).then((res) => {
-      return this._handleResponse(res)
-    })
-  }
-
   getInitialCards() {
     return fetch(`${this._link}cards`, {
       headers: this._headers,
     }).then((res) => {
-      return this._handleResponse(res)
+      return this._processingServerResponse(res)
     })
   }
 
-  setUserInfo(profileData) {
-    return fetch(`${this._link}users/me`, {
-      method: "PATCH",
-      headers: this._headers,
-      body: JSON.stringify({
-        name: profileData.username,
-        about: profileData.description,
-      }),
-    }).then((res) => {
-      return this._handleResponse(res)
-    })
-  }
-
-  addNewCard({ name, link }) {
+  addNewCard(name, link) {
     return fetch(`${this._link}cards`, {
-      method: "POST",
       headers: this._headers,
+      method: "POST",
       body: JSON.stringify({ name, link }),
     }).then((res) => {
-      return this._handleResponse(res)
+      return this._processingServerResponse(res)
     })
   }
 
   deleteCard(cardId) {
     return fetch(`${this._link}cards/${cardId}`, {
-      method: "DELETE",
       headers: this._headers,
+      method: "DELETE",
     }).then((res) => {
-      return this._handleResponse(res)
+      return this._processingServerResponse(res)
     })
   }
 
-  changeAvatar(avatarLink) {
-    return fetch(`${this._link}users/me/avatar`, {
-      method: "PATCH",
+  getUserData() {
+    return fetch(`${this._link}users/me`, {
       headers: this._headers,
+    }).then((res) => {
+      return this._processingServerResponse(res)
+    })
+  }
+
+  sendUserData(userName, userAbout) {
+    return fetch(`${this._link}users/me`, {
+      headers: this._headers,
+      method: "PATCH",
+      body: JSON.stringify({ name: userName, about: userAbout }),
+    }).then((res) => {
+      return this._processingServerResponse(res)
+    })
+  }
+
+  sendAvatarData(avatarLink) {
+    return fetch(`${this._link}users/me/avatar`, {
+      headers: this._headers,
+      method: "PATCH",
       body: JSON.stringify({ avatar: avatarLink.avatar }),
     }).then((res) => {
-      return this._handleResponse(res)
+      return this._processingServerResponse(res)
     })
   }
 
-  like(cardId) {
-    return fetch(`${this._link}cards/${cardId}/likes`, {
-      method: "PUT",
-      headers: this._headers,
-    }).then((res) => {
-      return this._handleResponse(res)
-    })
-  }
-
-  dislike(cardId) {
-    return fetch(`${this._link}cards/${cardId}/likes`, {
-      method: "DELETE",
-      headers: this._headers,
-    }).then((res) => {
-      return this._handleResponse(res)
-    })
+  changeLikeCardStatus(cardId, isLiked) {
+    if (isLiked) {
+      return fetch(`${this._link}cards/${cardId}/likes`, {
+        headers: this._headers,
+        method: "PUT",
+      }).then((res) => {
+        return this._processingServerResponse(res)
+      })
+    } else {
+      return fetch(`${this._link}cards/${cardId}/likes`, {
+        headers: this._headers,
+        method: "DELETE",
+      }).then((res) => {
+        return this._processingServerResponse(res)
+      })
+    }
   }
 }
+
 const apiConnect = new Api(apiFind)
 
 export default apiConnect
